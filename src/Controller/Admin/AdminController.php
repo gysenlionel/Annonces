@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Controller;
+namespace App\Controller\Admin;
 
 use App\Entity\Categories;
 use App\Form\CategoriesType;
@@ -11,7 +11,7 @@ use Symfony\Component\Routing\Annotation\Route;
 
 /**
  * @route("/admin", name="admin_")
- * @package App\Controller
+ * @package App\Controller\Admin
  */
 class AdminController extends AbstractController
 {
@@ -33,6 +33,16 @@ class AdminController extends AbstractController
         $categorie = new Categories;
 
         $form = $this->createForm(CategoriesType::class, $categorie);
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $em = $this->getDoctrine()->getManager();
+            $em->persist($categorie);
+            $em->flush();
+
+            return $this->redirectToRoute('admin_home');
+        }
 
         return $this->render('admin/categories/ajout.html.twig', [
             'form' => $form->createView(),
