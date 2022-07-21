@@ -2,8 +2,7 @@
 
 namespace App\Controller\Admin;
 
-use App\Entity\Categories;
-use App\Form\CategoriesType;
+use App\Entity\Annonces;
 use App\Repository\AnnoncesRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -27,48 +26,30 @@ class AnnoncesController extends AbstractController
     }
 
     /**
-     * @Route("/ajout", name="ajout")
+     * @Route("/activer/{id}", name="activer")
      */
-    public function ajoutCategorie(Request $request): Response
+    public function activer(Annonces $annonce)
     {
-        $categorie = new Categories;
+        $annonce->setActive(($annonce->getActive() ? false : true));
 
-        $form = $this->createForm(CategoriesType::class, $categorie);
+        $em = $this->getDoctrine()->getManager();
+        $em->persist($annonce);
+        $em->flush();
 
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $em = $this->getDoctrine()->getManager();
-            $em->persist($categorie);
-            $em->flush();
-
-            return $this->redirectToRoute('admin_categories_home');
-        }
-
-        return $this->render('admin/categories/ajout.html.twig', [
-            'form' => $form->createView(),
-        ]);
+        return new Response("true");
     }
 
     /**
-     * @Route("/modifier/{id}", name="modifier")
+     * @Route("/supprimer/{id}", name="supprimer")
      */
-    public function modifierCategorie(Categories $categorie, Request $request): Response
+    public function supprimer(Annonces $annonce)
     {
-        $form = $this->createForm(CategoriesType::class, $categorie);
 
-        $form->handleRequest($request);
+        $em = $this->getDoctrine()->getManager();
+        $em->remove($annonce);
+        $em->flush();
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $em = $this->getDoctrine()->getManager();
-            $em->persist($categorie);
-            $em->flush();
-
-            return $this->redirectToRoute('admin_categories_home');
-        }
-
-        return $this->render('admin/categories/ajout.html.twig', [
-            'form' => $form->createView(),
-        ]);
+        $this->addFlash('message', 'Annonces supprimée avec succès');
+        return $this->redirectToRoute('admin_annonces_home');
     }
 }

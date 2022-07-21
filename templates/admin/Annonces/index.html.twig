@@ -23,19 +23,64 @@
 						<td>{{ annonce.id }}</td>
 						<td>{{ annonce.title }}</td>
 						<td>{{ annonce.createdAt|date }}</td>
-						<td>{{ annonce.active }}
+						<td>
 							<label class="form-switch mt-2">
-								<input type="checkbox" checked/>
+								<input type="checkbox" {{ annonce.active ? 'checked' : ''}} data-id="{{annonce.id}}"/>
 								<span class="form-slider form-slider-thin"></span>
 							</label>
 						</td>
 						<td>
-							{# <a href="{{ path('admin_categories_modifier', {id: categorie.id})}}" class="btn shadow-1 rounded-1 blue">Modifier</a> #}
+							<a class="btn rounded-1 primary btnsupprimer" data-target="modal-delete" data-id="{{annonce.id}}" data-titre="{{annonce.title}}">Supprimer</a>
 						</td>
 					</tr>
 				{% endfor %}
 
 			</tbody>
 		</table>
+
+		<div class="modal shadow-1 white rounded-3 modal-bouncing" id="modal-delete" data-ax="modal">
+			<div class="modal-header">
+				Supprimer une annonce
+			</div>
+			<div class="modal-content"></div>
+			<div class="modal-footer d-flex fx-center gutter-xs2">
+				<a href="#" class="btn btn-small shadow-1 rounded-1 red">Valider</a>
+				<button data-target="modal-delete" class=" btn shadow-1 rounded-1 btn-small primary">Close</button>
+			</div>
+		</div>
+
 	</div>
+{% endblock %}
+
+{% block javascripts %}
+	<script>
+		window.onload = () => {
+let activer = document.querySelectorAll("[type=checkbox]")
+for (let bouton of activer) {
+bouton.addEventListener("click", function () {
+let xmlhttp = new XMLHttpRequest;
+
+xmlhttp.open("get", `/admin/annonces/activer/${
+this.dataset.id
+}`)
+
+xmlhttp.send()
+})
+}
+
+let supprimer = document.querySelectorAll(".btnsupprimer")
+for (let bouton of supprimer) {
+bouton.addEventListener("click", function () {
+document.querySelector(".modal-footer a").href = `/admin/annonces/supprimer/${
+this.dataset.id
+}`
+document.querySelector(".modal-content").innerText = `Etes-vous sûr(e) de vouloir supprimer l'annonce "${
+this.dataset.titre
+}"`
+})
+
+xmlhttp.send()
+}
+}
+	</script>
 {% endblock %}
