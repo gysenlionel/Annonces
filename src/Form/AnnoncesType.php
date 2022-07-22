@@ -12,6 +12,7 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use FOS\CKEditorBundle\Form\Type\CKEditorType;
+use Symfony\Component\Form\Extension\Core\Type\FileType;
 
 class AnnoncesType extends AbstractType
 {
@@ -20,6 +21,13 @@ class AnnoncesType extends AbstractType
         $builder
             ->add('title', TextType::class)
             ->add('content', CKEditorType::class)
+            // images pas lié à la db (mapped = false)
+            ->add('images', FileType::class, [
+                'label' => false,
+                'multiple' => true,
+                'mapped' => false,
+                'required' => false
+            ])
             ->add('categories', EntityType::class, [
                 'class' => Categories::class
             ])

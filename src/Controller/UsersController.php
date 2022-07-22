@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Annonces;
+use App\Entity\Images;
 use App\Form\AnnoncesType;
 use App\Form\EditProfilType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -33,6 +34,22 @@ class UsersController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            // récupère les images transmises
+            $images = $form->get('images')->getData();
+            foreach ($images as $image) {
+                // nouveau nom de fichier
+                $fichier = md5(uniqid()) . '.' . $image->guessExtension();
+                // copie le fichier dans le dossier uploads
+                $image->move(
+                    $this->getParameter('images_directory'),
+                    $fichier
+                );
+                // stocke le nom de l img dans la db
+                $img = new Images();
+                $img->setName($fichier);
+                $annonce->addImage($img);
+            }
+
             $annonce->setUsers($this->getUser());
             $annonce->setActive(false);
 
