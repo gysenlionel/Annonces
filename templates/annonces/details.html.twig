@@ -1,0 +1,38 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+	{{ annonce.title}}
+{% endblock %}
+
+{% block body %}
+	<div class="container mt-2">
+
+		<div class="caroulix" id="caroulix" data-ax="caroulix" data-ax-caroulix-autoplay-enabled="true" data-caroulix-indicators-enabled="true">
+			<div class="caroulix-arrow caroulix-prev">
+				<span class="iconify-inline font-s5" data-icon="mdi:chevron-left"></span>
+			</div>
+			<div class="caroulix-arrow caroulix-next">
+				<span class="iconify-inline font-s5" data-icon="mdi:chevron-right"></span>
+			</div>
+			{% for image in annonce.images %}
+				<div class="caroulix-item">
+					<img src="{{ asset('uploads/' ~ image.name)|imagine_filter('banniere') }}" alt="{{ annonce.title }}"/>
+				</div>
+			{% endfor %}
+		</div>
+
+
+		<h4 class="">{{ annonce.title }}</h4>
+		<div class="">
+			<p>Catégories:
+				{{ annonce.categories.name }}</p>
+			<p>{{ annonce.content|raw }}</p>
+		</div>
+
+	</div>
+{% endblock %}
+{% block javascript %}
+	<script>
+		let caroulix = new Axentix.Caroulix('#caroulix');
+	</script>
+{% endblock %}
