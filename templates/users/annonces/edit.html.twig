@@ -8,7 +8,7 @@
 	{{ form(form) }}
 		<h2>Images</h2>
 		{% for image in annonce.images %}
-			<div>
+			<div class="mb-4">
 				<img src="{{ asset('/uploads/' ~ image.name) }}" alt="Image" width="150">
 				<a href="{{ path('users_annonces_delete_image', {'id': image.id}) }}" data-delete data-token="{{ csrf_token('delete' ~ image.id) }}">Supprimer</a>
 			</div>

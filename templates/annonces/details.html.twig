@@ -5,7 +5,11 @@
 {% endblock %}
 
 {% block body %}
-	<div class="container mt-2">
+	<div class="container mt-4 mb-4">
+
+		{% for message in app.flashes('message') %}
+			<div class="col-xs4 p-3 my-2 rounded-1 green light-4 text-green text-dark-4">{{ message }}</div>
+		{% endfor %}
 
 		<div class="caroulix" id="caroulix" data-ax="caroulix" data-ax-caroulix-autoplay-enabled="true" data-caroulix-indicators-enabled="true">
 			<div class="caroulix-arrow caroulix-prev">
@@ -28,11 +32,39 @@
 				{{ annonce.categories.name }}</p>
 			<p>{{ annonce.content|raw }}</p>
 		</div>
-
+		<a class="btn rounded-1 primary btncontacter" data-target="modal-contact">Contacter</a>
 	</div>
+
+	<div class="modal shadow-1 white rounded-3 modal-bouncing" id="modal-contact" data-ax="modal">
+		<div class="modal-header">
+			Contacter l'annonceur
+		</div>
+		{{ form_start(form) }}
+		<div class="modal-content">
+			{{ form_widget(form.title) }}
+			{{ form_row(form.email) }}
+			{{ form_row(form.message) }}
+		</div>
+		<div class="modal-footer d-flex fx-center gutter-xs2">
+			<button class="btn btn-small shadow-1 rounded-1 primary">Envoyer</button>
+			<button data-target="modal-contact" class=" btn shadow-1 rounded-1 btn-small secondary">Close</button>
+		</div>
+		{{ form_end(form) }}
+	</div>
+
 {% endblock %}
 {% block javascript %}
 	<script>
+
 		let caroulix = new Axentix.Caroulix('#caroulix');
+	</script>
+{% endblock %}
+
+{% block javascripts %}
+	<script>
+
+		window.onload = () => {
+document.querySelector("#annonce_contact_title").value = "{{ annonce.title|raw }}"
+}
 	</script>
 {% endblock %}
