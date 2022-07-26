@@ -66,6 +66,42 @@ class UsersController extends AbstractController
     }
 
     /**
+     * @Route("users/annonces/edit/{id}", name="users_annonces_edit", methods={"GET","POST"})
+     */
+    public function editAnnonces(Request $request, Annonces $annonce): Response
+    {
+        $form = $this->createForm(AnnoncesType::class, $annonce);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            // récupère les images transmises
+            $images = $form->get('images')->getData();
+            foreach ($images as $image) {
+                // nouveau nom de fichier
+                $fichier = md5(uniqid()) . '.' . $image->guessExtension();
+                // copie le fichier dans le dossier uploads
+                $image->move(
+                    $this->getParameter('images_directory'),
+                    $fichier
+                );
+                // stocke le nom de l img dans la db
+                $img = new Images();
+                $img->setName($fichier);
+                $annonce->addImage($img);
+            }
+
+            $this->getDoctrine()->getManager()->flush();
+
+            return $this->redirectToRoute('users');
+        }
+
+        return $this->render('users/annonces/edit.html.twig', [
+            'annonce' => $annonce,
+            'form' => $form->createView(),
+        ]);
+    }
+
+    /**
      * @Route("users/profile/editprofile", name="users_profile_editprofile")
      */
     public function editProfile(Request $request): Response
