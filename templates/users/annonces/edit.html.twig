@@ -5,4 +5,16 @@
 
 {% block body %}
 	<h1>Editer une annonce</h1>
-	{{ form(form) }}{% endblock %}
+	{{ form(form) }}
+		<h2>Images</h2>
+		{% for image in annonce.images %}
+			<div>
+				<img src="{{ asset('/uploads/' ~ image.name) }}" alt="Image" width="150">
+				<a href="{{ path('users_annonces_delete_image', {'id': image.id}) }}" data-delete data-token="{{ csrf_token('delete' ~ image.id) }}">Supprimer</a>
+			</div>
+		{% endfor %}
+	{% endblock %}
+
+	{% block javascripts %}
+		<script src="{{ asset('js/images.js') }}"></script>
+	{% endblock %}

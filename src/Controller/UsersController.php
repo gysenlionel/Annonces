@@ -7,6 +7,7 @@ use App\Entity\Images;
 use App\Form\AnnoncesType;
 use App\Form\EditProfilType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -151,5 +152,29 @@ class UsersController extends AbstractController
         }
 
         return $this->render('users/editpass.html.twig');
+    }
+
+    /**
+     * @Route("/users/annonces/delete/image/{id}", name="users_annonces_delete_image", methods={"DELETE"})
+     */
+    public function deleteImage(Images $image, Request $request)
+    {
+        // mettre en true pour l'avoir en tableau assoc
+        $data = json_decode($request->getContent(), true);
+
+        // Vérifie si le token est valide
+        if ($this->isCsrfTokenValid('delete' . $image->getId(), $data['_token'])) {
+            $nom = $image->getName();
+            unlink($this->getParameter('images_directory') . '/' . $nom);
+
+            $em = $this->getDoctrine()->getManager();
+            $em->remove($image);
+            $em->flush();
+
+            // On répond en json
+            return new JsonResponse(['success' => 1]);
+        } else {
+            return new JsonResponse(['error' => 'Token Invalide'], 400);
+        }
     }
 }
