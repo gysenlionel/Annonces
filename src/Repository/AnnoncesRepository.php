@@ -24,6 +24,30 @@ class AnnoncesRepository extends ServiceEntityRepository
     }
 
     /**
+     * Recherche les annonces en fonction du formulaire de recherche
+     *
+     * @return void
+     */
+    public function search($mots = null, $categorie = null)
+    {
+        $query = $this->createQueryBuilder('a');
+        $query->where('a.active = 1');
+        if ($mots != null) {
+            // utilisé setParameter pcq :mots est un paramètre dans la query
+            $query->andWhere('MATCH_AGAINST(a.title, a.content) AGAINST(:mots boolean)>0')
+                ->setParameter('mots', $mots);
+        }
+
+        if ($categorie != null) {
+            $query->leftJoin('a.categories', 'c');
+            $query->andWhere('c.id = :id')
+                ->setParameter('id', $categorie);
+        }
+
+        return $query->getQuery()->getResult();
+    }
+
+    /**
      * @throws ORMException
      * @throws OptimisticLockException
      */
