@@ -27,8 +27,14 @@
 					<a class="navbar-link" href="{{ path('app_home')}}">Accueil</a>
 					<a class="navbar-link" href="{{ path('users') }}">Profil</a>
 					<a class="navbar-link" href="{{ path('users_annonces_ajout')}}">Créer annonce</a>
-					<a class="navbar-link" href="{{ path('admin_home')}}">admin</a>
-					<a class="navbar-link" href="{{ path('app_logout') }}">Logout</a>
+					{% if is_granted('ROLE_ADMIN') %}
+						<a class="navbar-link" href="{{ path('admin_home')}}">admin</a>
+					{% endif %}
+					{% if app.user %}
+						<a class="navbar-link" href="{{ path('app_logout') }}">Logout</a>
+					{% else %}
+						<a class="navbar-link" href="{{ path('app_login') }}">Login</a>
+					{% endif %}
 				</div>
 			</nav>
 		</header>
