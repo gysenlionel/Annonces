@@ -6,6 +6,9 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
 use Twig\Environment;
 
+/**
+ * Ecouteur d'événement pour maintenance
+ */
 class MaintenanceListener
 {
     private $maintenance;

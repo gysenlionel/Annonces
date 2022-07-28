@@ -1,0 +1,71 @@
+{% extends 'users.html.twig' %}
+
+{% block title %}Données de
+	{{ app.user.firstname }}
+	{{ app.user.name }}
+{% endblock %}
+
+{% block body %}
+	<div class="grix xs4 gutter-xs5 container mt-4 mb-4">
+		{% for message in app.flashes('message') %}
+			<div class="col-xs4 p-3 my-2 rounded-1 green light-4 text-green text-dark-4">{{ message }}</div>
+		{% endfor %}
+		<div class="col-xs4">
+			<h1>
+				Données personnelles de
+				{{ app.user.firstname }}
+				{{ app.user.name }}
+			</h1>
+			<a href="{{ path('users_data_download') }}" class="btn btn-small shadow-1 rounded-1 blue">Télécharger les données</a>
+		</div>
+
+		<div class="col-xs1">Nom:
+		</div>
+		<div class="col-xs3">{{ app.user.name }}</div>
+		<div class="col-xs1">Prénom:</div>
+		<div class="col-xs3">{{ app.user.firstname }}</div>
+		<div class="col-xs1">Email:</div>
+		<div class="col-xs3">
+			{{ app.user.email }}
+		</div>
+		<div class="col-xs4">
+			<h1>
+				Annonces de
+				{{ app.user.firstname }}
+				{{ app.user.name }}
+				({{ app.user.annonces|length }})
+			</h1>
+		</div>
+	</div>
+	<div class="container">
+		<div class="table-responsive">
+			<table class="table table-no-border">
+				<thead>
+					<tr>
+						<th>Titre</th>
+						<th>Contenu</th>
+						<th>Images</th>
+						<th>Modifier</th>
+					</tr>
+				</thead>
+				<tbody>
+					{% for annonce in app.user.annonces %}
+						<tr>
+							<td>{{ annonce.title }}</td>
+							<td>{{ annonce.content }}</td>
+							<td>
+								{% for image in annonce.images %}
+									<img src="{{ asset('uploads/' ~ image.name)|imagine_filter('mini') }}" alt="{{ annonce.title }}">
+								{% endfor %}
+							</td>
+							<td>
+								<a href="{{ path('users_annonces_edit', {'id': annonce.id}) }}" class="btn btn-small shadow-1 rounded-1 blue">Modifier l'annonce</a>
+							</td>
+						</tr>
+					{% endfor %}
+				</tbody>
+			</table>
+		</div>
+	</div>
+
+{% endblock %}

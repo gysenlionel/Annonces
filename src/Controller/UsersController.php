@@ -12,6 +12,8 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
+use Dompdf\Dompdf;
+use Dompdf\Options;
 
 class UsersController extends AbstractController
 {
@@ -153,6 +155,55 @@ class UsersController extends AbstractController
 
         return $this->render('users/editpass.html.twig');
     }
+
+    /**
+     * @Route("/users/data", name="users_data")
+     */
+    public function usersData(): Response
+    {
+        return $this->render('users/data.html.twig');
+    }
+
+    /**
+     * @Route("/users/data/download", name="users_data_download")
+     */
+    public function usersDataDownload(): Response
+    {
+        // définit les options du pdf
+        $pdfOptions = new Options();
+
+        $pdfOptions->set('defaultFont', 'Aria');
+        $pdfOptions->setIsRemoteEnabled(true);
+
+        // instancié Dompdf
+        $dompdf = new Dompdf($pdfOptions);
+        $context = stream_context_create([
+            'ssl' => [
+                'verify_peer' => FALSE,
+                'verify_peer_name' => FALSE,
+                'allow_self_signed' => TRUE
+            ]
+        ]);
+        $dompdf->setHttpContext($context);
+
+        // on génère le html
+        $html = $this->renderView('users/download.html.twig');
+
+        $dompdf->loadHtml($html);
+        $dompdf->setPaper('A4', 'portrait');
+        $dompdf->render();
+
+        // On génère un nom de fichier
+        $fichier = 'user-data-' . $this->getUser()->getId() . '.pdf';
+
+        // On envoie le pdf au navigateur
+        $dompdf->stream($fichier, [
+            'Attachment' => true
+        ]);
+
+        return new Response();
+    }
+
 
     /**
      * @Route("/users/annonces/delete/image/{id}", name="users_annonces_delete_image", methods={"DELETE"})
