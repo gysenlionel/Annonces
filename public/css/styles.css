@@ -1,0 +1,5 @@
+.desabled {
+    pointer-events: none;
+    cursor: default;
+    background-color: #cfccccd5;
+}

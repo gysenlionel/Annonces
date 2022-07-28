@@ -19,6 +19,9 @@ class MainController extends AbstractController
      */
     public function index(AnnoncesRepository $annoncesRepo, Request $request): Response
     {
+
+        // $annonces = $annoncesRepo->selectInterval("2022-07-22", "2022-07-23", 3);
+        // dd($annonces);
         $annonces = $annoncesRepo->findBy(['active' => true], ['created_at' => 'desc'], 5);
 
         $form = $this->createForm(SearchAnnonceType::class);
