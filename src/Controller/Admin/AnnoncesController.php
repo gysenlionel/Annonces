@@ -44,6 +44,17 @@ class AnnoncesController extends AbstractController
      */
     public function supprimer(Annonces $annonce)
     {
+        $images = $annonce->getImages();
+
+        if ($images) {
+            foreach ($images as $image) {
+                $nomImage = $this->getParameter("images_directory") . '/' . $image->getName();
+
+                if (file_exists($nomImage)) {
+                    unlink($nomImage);
+                }
+            }
+        }
 
         $em = $this->getDoctrine()->getManager();
         $em->remove($annonce);
